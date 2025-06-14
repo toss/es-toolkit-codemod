@@ -1,6 +1,6 @@
 {
   "name": "@es-toolkit/codemod",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "A codemod to transform lodash imports to es-toolkit/compat imports",
   "keywords": [
     "codemod",
@@ -18,9 +18,7 @@
   },
   "license": "MIT",
   "author": "Toss",
-  "main": "dist/transform.js",
-  "module": "dist/transform.mjs",
-  "types": "dist/transform.d.ts",
+  "main": "dist/index.js",
   "bin": {
     "es-toolkit-codemod": "./bin/cli.js"
   },
