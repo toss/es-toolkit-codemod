@@ -1,22 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import jscodeshift from 'jscodeshift';
 import transform from '../src/index';
 
 function testTransform(input: string): string | null {
-  const fileInfo = {
+  return transform({
     path: 'test.js',
     source: input,
-  };
-
-  const j = jscodeshift.withParser('tsx');
-  const api = {
-    jscodeshift: j,
-    j: j,
-    stats: () => {},
-    report: () => {},
-  };
-
-  return transform(fileInfo, api);
+  });
 }
 
 describe('lodash to es-toolkit/compat codemod', () => {

@@ -1,122 +1,158 @@
-import type { API, Collection, FileInfo, JSCodeshift } from 'jscodeshift';
-import { detectQuoteStyle } from './detect-quote-style';
+import { parse, Lang, SgNode, Edit } from "@ast-grep/napi";
+import { detectQuoteStyle } from "./detect-quote-style";
+import { FileInfo } from "jscodeshift";
+import { Kinds, TypesMap } from "@ast-grep/napi/types/staticTypes";
 
-export default function transform(file: FileInfo, api: API): string | null {
-  const { jscodeshift: j } = api;
+type Root = SgNode<TypesMap, Kinds<TypesMap>>;
+
+export default function transform(fileInfo: FileInfo): string | null {
+  const { path: filePath, source: fileSource } = fileInfo;
 
   try {
-    const root = j(file.source);
-    let hasChanges = false;
+    const ast = parse(Lang.JavaScript, fileSource);
+    const root = ast.root();
 
-    // Transform all lodash-related imports
-    hasChanges = transformLodashImports(root, j) || hasChanges;
+    const quote = detectQuoteStyle(fileSource);
 
-    // Detect quote style used in original code
-    const quoteStyle = detectQuoteStyle(file.source);
+    const transformFunctions: Array<(root: Root, quote: string) => Edit[]> = [
+      transformFunctionImports,
+      transformNamedImports,
+      transformDefaultImports,
+      transformLodashEsImports,
+    ];
 
-    return hasChanges ? root.toSource({ quote: quoteStyle }) : null;
+    const allEdits = transformFunctions.reduce((edits, transformFn) => {
+      edits.push(...transformFn(root, quote));
+      return edits;
+    }, [] as Edit[]);
+
+    if (allEdits.length === 0) {
+      return null;
+    }
+
+    // Apply all edits using commitEdits on the root
+    const newSource = root.commitEdits(allEdits);
+    return newSource;
   } catch (error) {
-    console.error(`Error transforming file ${file.path}:`, error);
+    console.error(`Error transforming file ${filePath}:`, error);
     return null;
   }
 }
 
-function transformLodashImports(root: Collection, j: JSCodeshift): boolean {
-  const transformers = [
-    transformLodashDefaultImports,
-    transformLodashEsImports,
-    transformLodashFunctionImports,
-  ];
 
-  const hasChanges = transformers.reduce((hasChanges, transform) => 
-    transform(root, j) || hasChanges, false
-  );
 
-  return hasChanges;
-}
+// Transform lodash function imports: import debounce from 'lodash/debounce' -> import debounce from 'es-toolkit/compat/debounce'
+function transformFunctionImports(root: Root, quote: string) {
+  const edits = [];
 
-// import _ from 'lodash' → import * as _ from 'es-toolkit/compat'
-function transformLodashDefaultImports(root: Collection, j: JSCodeshift): boolean {
-  const lodashImports = root.find(j.ImportDeclaration, {
-    source: { value: 'lodash' },
-  });
+  const functionImports = root
+    .findAll("import $NAME from $SOURCE")
+    .filter((node) => {
+      const source = node.getMatch("SOURCE");
+      if (!source) return false;
+      const sourceText = source.text();
+      return (
+        sourceText.includes("lodash/") && !sourceText.includes("lodash-es")
+      );
+    });
 
-  if (lodashImports.length === 0) {
-    return false;
-  }
-
-  lodashImports.replaceWith(path => {
-    const { node } = path;
-
-    if (node.specifiers) {
-      const defaultSpecifier = node.specifiers.find(spec => spec.type === 'ImportDefaultSpecifier');
-
-      if (defaultSpecifier && defaultSpecifier.local) {
-        // import _ from 'lodash' → import * as _ from 'es-toolkit/compat'
-        return j.importDeclaration(
-          [j.importNamespaceSpecifier(defaultSpecifier.local)],
-          j.literal('es-toolkit/compat')
-        );
-      } else {
-        // import { foo, bar } from 'lodash' → import { foo, bar } from 'es-toolkit/compat'
-        return j.importDeclaration(node.specifiers, j.literal('es-toolkit/compat'));
+  for (const node of functionImports) {
+    const nameNode = node.getMatch("NAME");
+    const sourceNode = node.getMatch("SOURCE");
+    if (nameNode && sourceNode) {
+      const localName = nameNode.text();
+      const sourceText = sourceNode.text();
+      const match = sourceText.match(/['"]lodash\/(\w+)['"]/);
+      if (match) {
+        const functionName = match[1];
+        const replacement = `import ${localName} from ${quote}es-toolkit/compat/${functionName}${quote}`;
+        edits.push(node.replace(replacement + ";"));
       }
     }
-    return node;
-  });
-
-  return true;
-}
-
-// import { foo, bar } from 'lodash-es' → import { foo, bar } from 'es-toolkit/compat'
-function transformLodashEsImports(root: Collection, j: JSCodeshift): boolean {
-  const lodashEsImports = root.find(j.ImportDeclaration, {
-    source: { value: 'lodash-es' },
-  });
-
-  if (lodashEsImports.length === 0) {
-    return false;
   }
 
-  lodashEsImports.replaceWith(path => {
-    const { node } = path;
-
-    if (node.specifiers) {
-      return j.importDeclaration(node.specifiers, j.literal('es-toolkit/compat'));
-    }
-    return node;
-  });
-
-  return true;
+  return edits;
 }
 
-// import debounce from 'lodash/debounce' → import debounce from 'es-toolkit/compat/debounce'
-function transformLodashFunctionImports(root: Collection, j: JSCodeshift): boolean {
-  const lodashFunctionImports = root.find(j.ImportDeclaration).filter(path => {
-    const source = path.node.source.value;
-    return typeof source === 'string' && source.startsWith('lodash/');
-  });
+// Transform lodash named imports: import { foo, bar } from 'lodash' -> import { foo, bar } from 'es-toolkit/compat'
+function transformNamedImports(root: Root, quote: string) {
+  const edits = [];
 
-  if (lodashFunctionImports.length === 0) {
-    return false;
+  const namedImports = root
+    .findAll("import { $$$SPECS } from $SOURCE")
+    .filter((node) => {
+      const source = node.getMatch("SOURCE");
+      if (!source) return false;
+      const sourceText = source.text();
+      return sourceText === '"lodash"' || sourceText === "'lodash'";
+    });
+
+  for (const node of namedImports) {
+    // Extract the original import specifiers text from the source
+    const nodeText = node.text();
+    const match = nodeText.match(/import\s*\{\s*([^}]+)\s*\}/);
+    if (match) {
+      const specifiersText = match[1].trim();
+      const replacement = `import { ${specifiersText} } from ${quote}es-toolkit/compat${quote}`;
+      edits.push(node.replace(replacement + ";"));
+    }
   }
 
-  lodashFunctionImports.replaceWith(path => {
-    const { node } = path;
-    const modulePath = node.source.value as string;
-    const functionName = modulePath.replace('lodash/', '');
+  return edits;
+}
 
-    if (node.specifiers && node.specifiers[0] && node.specifiers[0].local) {
-      const localIdentifier = node.specifiers[0].local;
+// Transform lodash default imports: import _ from 'lodash' -> import * as _ from 'es-toolkit/compat'
+function transformDefaultImports(root: Root, quote: string) {
+  const edits = [];
 
-      // Keep the original default import structure
-      return j.importDeclaration(
-        [j.importDefaultSpecifier(localIdentifier)],
-        j.literal(`es-toolkit/compat/${functionName}`)
-      );
+  const defaultImports = root
+    .findAll("import $NAME from $SOURCE")
+    .filter((node) => {
+      const source = node.getMatch("SOURCE");
+      if (!source) return false;
+      const sourceText = source.text();
+      const isLodash = sourceText === '"lodash"' || sourceText === "'lodash'";
+      // Make sure this is NOT a named import by checking the node text
+      const nodeText = node.text();
+      const isNotNamed = !nodeText.includes("{");
+      return isLodash && isNotNamed;
+    });
+
+  for (const node of defaultImports) {
+    const nameNode = node.getMatch("NAME");
+    if (nameNode) {
+      const localName = nameNode.text();
+      const replacement = `import * as ${localName} from ${quote}es-toolkit/compat${quote}`;
+      edits.push(node.replace(replacement + ";"));
     }
-    return node;
-  });
+  }
 
-  return true;
+  return edits;
+}
+
+// Transform lodash-es imports: import { foo, bar } from 'lodash-es' -> import { foo, bar } from 'es-toolkit/compat'
+function transformLodashEsImports(root: Root, quote: string) {
+  const edits = [];
+
+  const lodashEsImports = root
+    .findAll("import { $$$SPECS } from $SOURCE")
+    .filter((node) => {
+      const source = node.getMatch("SOURCE");
+      if (!source) return false;
+      const sourceText = source.text();
+      return sourceText === '"lodash-es"' || sourceText === "'lodash-es'";
+    });
+
+  for (const node of lodashEsImports) {
+    // Extract the original import specifiers text from the source
+    const nodeText = node.text();
+    const match = nodeText.match(/import\s*\{\s*([^}]+)\s*\}/);
+    if (match) {
+      const specifiersText = match[1].trim();
+      const replacement = `import { ${specifiersText} } from ${quote}es-toolkit/compat${quote}`;
+      edits.push(node.replace(replacement + ";"));
+    }
+  }
+
+  return edits;
 }

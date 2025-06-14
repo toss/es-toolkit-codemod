@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
-const path = require('path');
-const fs = require('fs');
+const path = require("path");
+const fs = require("fs");
 
 function showHelp() {
   console.log(`
@@ -33,76 +32,82 @@ Repository: https://github.com/toss/es-toolkit-codemod
   `);
 }
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
 
-  if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+  if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
     showHelp();
     return;
   }
 
   const targetPath = args[0];
-  const isDryRun = args.includes('--dry');
+  const isDryRun = args.includes("--dry");
 
   if (!fs.existsSync(targetPath)) {
     console.error(`❌ Error: Path "${targetPath}" does not exist.`);
     process.exit(1);
   }
 
-  const transformPath = path.join(__dirname, '../dist/index.js');
+  const transformPath = path.join(__dirname, "../dist/index.js");
 
   if (!fs.existsSync(transformPath)) {
-    console.error(`❌ Error: Transform file not found. Please ensure the package is built correctly.`);
-    console.log('💡 Try running: npm run build');
+    console.error(`❌ Error: Transform file not found at ${transformPath}`);
+    console.log("💡 Try running: npm run build");
     process.exit(1);
   }
 
   console.log(`🚀 Running lodash → es-toolkit/compat codemod...`);
   console.log(`📁 Target: ${targetPath}`);
-  console.log(`🔄 Mode: ${isDryRun ? 'Dry run (preview only)' : 'Apply changes'}`);
-  console.log('');
+  console.log(
+    `🔄 Mode: ${isDryRun ? "Dry run (preview only)" : "Apply changes"}`
+  );
+  console.log("");
 
   try {
-    const cmd = [
-      'npx',
-      'jscodeshift',
-      '-t',
-      transformPath,
-      targetPath,
-      '--extensions=ts,tsx,js,jsx',
-      '--parser=tsx',
-      isDryRun ? '--dry' : '',
-      isDryRun ? '--print' : '--silent',
-    ]
-      .filter(Boolean)
-      .join(' ');
+    // using jscodeshift Runner for performance
+    const Runner = require("jscodeshift/src/Runner");
 
-    const result = execSync(cmd, {
-      encoding: 'utf8',
-      stdio: isDryRun ? 'pipe' : 'inherit',
-      env: {
-        ...process.env,
-        NODE_NO_WARNINGS: '1'
-      }
-    });
+    const options = {
+      dry: isDryRun,
+      print: isDryRun, // print result in dry run
+      silent: true,
+      verbose: 2,
+      babel: false, // transform using ast-grep, disable babel parsing
+      extensions: "ts,tsx,js,jsx",
+      failOnError: false,
+    };
 
-    if (isDryRun && result.trim()) {
-      console.log('🔍 Preview of changes:');
-      console.log('─'.repeat(50));
-      console.log(result);
-      console.log('─'.repeat(50));
-      console.log('');
-      console.log('💡 To apply these changes, run the command without --dry flag');
-    } else if (!isDryRun) {
-      console.log('✅ Transformation completed successfully!');
-      console.log('');
-      console.log('📝 Please review the changes and test your application.');
-      console.log('🔗 Learn more about es-toolkit: https://es-toolkit.slash.page');
-    } else {
-      console.log('ℹ️  No lodash imports found to transform.');
+    console.log("🔍 Discovering and processing files...");
+
+    const result = await Runner.run(transformPath, [targetPath], options);
+
+    console.log("\n" + "─".repeat(60));
+    console.log(`📊 Summary:`);
+    console.log(`   • Files changed: ${result.ok || 0}`);
+    console.log(`   • Files unchanged: ${result.nochange || 0}`);
+    console.log(`   • Errors: ${result.error || 0}`);
+    console.log(`   • Skipped: ${result.skip || 0}`);
+    console.log(`   • Duration: ${result.timeElapsed}ms`);
+
+    if (isDryRun && result.ok > 0) {
+      console.log(
+        "\n💡 To apply these changes, run the command without --dry flag"
+      );
+    } else if (!isDryRun && result.ok > 0) {
+      console.log("\n✅ Transformation completed successfully!");
+      console.log("📝 Please review the changes and test your application.");
+      console.log(
+        "🔗 Learn more about es-toolkit: https://es-toolkit.slash.page"
+      );
+    } else if (result.ok === 0) {
+      console.log("\nℹ️  No lodash imports found to transform.");
+    }
+
+    if (result.error > 0) {
+      process.exit(1);
     }
   } catch (error) {
-    console.error('❌ Error running codemod:', error.message);
+    console.error("❌ Error running codemod:", error.message);
     process.exit(1);
   }
 }

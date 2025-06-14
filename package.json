@@ -34,6 +34,7 @@
     "dev": "tsdown --watch"
   },
   "dependencies": {
+    "@ast-grep/napi": "^0.38.5",
     "jscodeshift": "^17.3.0"
   },
   "devDependencies": {
