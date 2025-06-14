@@ -2,22 +2,22 @@
 
 # @es-toolkit/codemod &middot; [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/toss/slash/blob/main/LICENSE) [![Discord Badge](https://discord.com/api/guilds/1281071127052943361/widget.png?style=shield)](https://discord.gg/vGXbVjP2nY)
 
-English | [한국어](https://github.com/toss/es-toolkit-codemod/blob/main/README-ko_kr.md)
+[English](https://github.com/toss/es-toolkit-codemod/blob/main/README.md) | 한국어
 
-## 🚀 Quick Start
+## 🚀 빠른 시작
 
 ```bash
-# Using npm
+# npm을 사용하는 경우
 npx @es-toolkit/codemod src/
 
-# Using yarn  
+# yarn을 사용하는 경우  
 yarn dlx @es-toolkit/codemod src/
 
-# Preview mode (check changes without applying them)
+# 미리보기 모드 (변경사항을 적용하지 않고 확인만)
 npx @es-toolkit/codemod src/ --dry
 ```
 
-## 📋 Supported transformations
+## 📋 지원하는 변환
 
 ### 1. Default Import
 
@@ -85,41 +85,41 @@ import {
 } from 'es-toolkit/compat';
 ```
 
-## 🎯 Usage
+## 🎯 사용법
 
-### Basic Usage
+### 기본 사용법
 
 ```bash
 npx @es-toolkit/codemod <path>
 ```
 
-### Options
+### 옵션
 
-| Option | Description | Example |
+| 옵션 | 설명 | 예시 |
 |------|------|------|
-| `<path>` | File or directory path to transform | `src/` , `components/` |
-| `--dry` | Preview mode (don't apply changes) | `--dry` |
-| `--help` , `-h` | Show help | `--help` |
+| `<path>` | 변환할 파일 또는 디렉토리 경로 | `src/` , `components/` |
+| `--dry` | 미리보기 모드 (변경 적용 안함) | `--dry` |
+| `--help` , `-h` | 도움말 표시 | `--help` |
 
-### Usage Examples
+### 사용 예시
 
 ```bash
-# Transform entire src directory
+# 전체 src 디렉토리 변환
 npx @es-toolkit/codemod src/
 
-# Transform specific file only
+# 특정 파일만 변환
 npx @es-toolkit/codemod src/utils/helpers.ts
 
-# Check changes in preview mode
+# 미리보기 모드로 변경사항 확인
 npx @es-toolkit/codemod src/ --dry
 
-# Transform components directory only
+# components 디렉토리만 변환
 npx @es-toolkit/codemod src/components/
 ```
 
-## 🔗 Related Links
+## 🔗 관련 링크
 
-* [es-toolkit Documentation](https://es-toolkit.slash.page)
+* [es-toolkit 공식 문서](https://es-toolkit.slash.page)
 * [es-toolkit GitHub](https://github.com/toss/es-toolkit)
 
 ## License
