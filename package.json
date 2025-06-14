@@ -1,0 +1,55 @@
+{
+  "name": "@es-toolkit/codemod",
+  "version": "0.0.2",
+  "description": "A codemod to transform lodash imports to es-toolkit/compat imports",
+  "keywords": [
+    "codemod",
+    "jscodeshift",
+    "lodash",
+    "es-toolkit",
+    "migration",
+    "refactor"
+  ],
+  "homepage": "https://github.com/toss/es-toolkit-codemod",
+  "bugs": "https://github.com/toss/es-toolkit-codemod/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toss/es-toolkit-codemod.git"
+  },
+  "license": "MIT",
+  "author": "Toss",
+  "main": "dist/transform.js",
+  "module": "dist/transform.mjs",
+  "types": "dist/transform.d.ts",
+  "bin": {
+    "es-toolkit-codemod": "./bin/cli.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsdown --watch"
+  },
+  "dependencies": {
+    "jscodeshift": "^17.3.0"
+  },
+  "devDependencies": {
+    "@types/jscodeshift": "^17.3.0",
+    "@types/node": "^22.7.4",
+    "tsdown": "^0.9.0",
+    "typescript": "^5.8.2",
+    "vitest": "^2.1.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "yarn@4.9.2"
+}
