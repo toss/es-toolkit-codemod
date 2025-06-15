@@ -52,7 +52,7 @@ import throttle from "es-toolkit/compat/throttle";
 ```
 
 > [!NOTE]
-> The variable/function name will be preserved when importing individual functions.
+> The variable/function name will be preserved.
 > e.g. `import debounceFn from 'lodash/debounce'` will be transformed to `import debounceFn from 'es-toolkit/compat/debounce'`
 
 ### 4. lodash-es Import
