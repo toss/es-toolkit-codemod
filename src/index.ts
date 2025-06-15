@@ -29,7 +29,7 @@ function transformLodashImports(root: Collection, j: JSCodeshift): boolean {
   return hasChanges;
 }
 
-// import _ from 'lodash' → import * as _ from 'es-toolkit/compat'
+// import _ from 'lodash' → import _ from 'es-toolkit/compat'
 function transformLodashDefaultImports(root: Collection, j: JSCodeshift): boolean {
   const lodashImports = root.find(j.ImportDeclaration, {
     source: { value: 'lodash' },
@@ -46,9 +46,8 @@ function transformLodashDefaultImports(root: Collection, j: JSCodeshift): boolea
       const defaultSpecifier = node.specifiers.find((spec) => spec.type === 'ImportDefaultSpecifier');
 
       if (defaultSpecifier?.local) {
-        // import _ from 'lodash' → import * as _ from 'es-toolkit/compat'
         return j.importDeclaration(
-          [j.importNamespaceSpecifier(defaultSpecifier.local)],
+          [j.importDefaultSpecifier(defaultSpecifier.local)],
           j.literal('es-toolkit/compat'),
         );
       }

@@ -25,7 +25,7 @@ describe('lodash to es-toolkit/compat codemod', () => {
       const input = `import _ from 'lodash';
 console.log(_.map([1, 2, 3], x => x * 2));`;
 
-      const expected = `import * as _ from 'es-toolkit/compat';
+      const expected = `import _ from 'es-toolkit/compat';
 console.log(_.map([1, 2, 3], x => x * 2));`;
 
       const result = testTransform(input);
@@ -97,7 +97,7 @@ const result2 = map([1, 2, 3], x => x * 2);
 const fn1 = debounce(() => {}, 100);
 const fn2 = throttle(() => {}, 200);`;
 
-      const expected = `import * as _ from 'es-toolkit/compat';
+      const expected = `import _ from 'es-toolkit/compat';
 import { map } from 'es-toolkit/compat';
 import debounce from 'es-toolkit/compat/debounce';
 import throttle from 'es-toolkit/compat/throttle';
@@ -118,7 +118,7 @@ const fn2 = throttle(() => {}, 200);`;
 import { map } from 'lodash-es';
 import debounce from 'lodash/debounce';`;
 
-      const expected = `import * as _ from 'es-toolkit/compat';
+      const expected = `import _ from 'es-toolkit/compat';
 import { map } from 'es-toolkit/compat';
 import debounce from 'es-toolkit/compat/debounce';`;
 
@@ -131,7 +131,7 @@ import debounce from 'es-toolkit/compat/debounce';`;
 import { map } from "lodash-es";
 import debounce from "lodash/debounce";`;
 
-      const expected = `import * as _ from "es-toolkit/compat";
+      const expected = `import _ from "es-toolkit/compat";
 import { map } from "es-toolkit/compat";
 import debounce from "es-toolkit/compat/debounce";`;
 
@@ -145,7 +145,7 @@ import { map } from "lodash-es";
 import debounce from 'lodash/debounce';
 import React from "react";`;
 
-      const expected = `import * as _ from "es-toolkit/compat";
+      const expected = `import _ from "es-toolkit/compat";
 import { map } from "es-toolkit/compat";
 import debounce from "es-toolkit/compat/debounce";
 import React from "react";`;
@@ -160,7 +160,7 @@ import { map } from 'lodash-es';
 import debounce from "lodash/debounce";
 import React from 'react';`;
 
-      const expected = `import * as _ from 'es-toolkit/compat';
+      const expected = `import _ from 'es-toolkit/compat';
 import { map } from 'es-toolkit/compat';
 import debounce from 'es-toolkit/compat/debounce';
 import React from 'react';`;
