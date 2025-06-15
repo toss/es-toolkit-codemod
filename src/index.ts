@@ -46,10 +46,7 @@ function transformLodashDefaultImports(root: Collection, j: JSCodeshift): boolea
       const defaultSpecifier = node.specifiers.find((spec) => spec.type === 'ImportDefaultSpecifier');
 
       if (defaultSpecifier?.local) {
-        return j.importDeclaration(
-          [j.importDefaultSpecifier(defaultSpecifier.local)],
-          j.literal('es-toolkit/compat'),
-        );
+        return j.importDeclaration([j.importDefaultSpecifier(defaultSpecifier.local)], j.literal('es-toolkit/compat'));
       }
       // import { foo, bar } from 'lodash' → import { foo, bar } from 'es-toolkit/compat'
       return j.importDeclaration(node.specifiers, j.literal('es-toolkit/compat'));

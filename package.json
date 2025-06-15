@@ -30,7 +30,9 @@
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "dev": "tsdown --watch",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write"
   },
   "dependencies": {
     "jscodeshift": "^17.3.0"
