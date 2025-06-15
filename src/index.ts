@@ -1,4 +1,5 @@
 import type { API, Collection, FileInfo, JSCodeshift } from 'jscodeshift';
+import { lodashFunctionsLowerCaseToOriginalMap } from './constants';
 import { detectQuoteStyle } from './detect-quote-style';
 
 export default function transform(file: FileInfo, api: API): string | null {
@@ -22,7 +23,12 @@ export default function transform(file: FileInfo, api: API): string | null {
 }
 
 function transformLodashImports(root: Collection, j: JSCodeshift): boolean {
-  const transformers = [transformLodashDefaultImports, transformLodashEsImports, transformLodashFunctionImports];
+  const transformers = [
+    transformLodashDefaultImports,
+    transformLodashEsImports,
+    transformLodashFunctionImports,
+    transformLodashIndividualPackages,
+  ];
 
   const hasChanges = transformers.reduce((hasChanges, transform) => transform(root, j) || hasChanges, false);
 
@@ -102,6 +108,42 @@ function transformLodashFunctionImports(root: Collection, j: JSCodeshift): boole
       return j.importDeclaration(
         [j.importDefaultSpecifier(localIdentifier)],
         j.literal(`es-toolkit/compat/${functionName}`),
+      );
+    }
+    return node;
+  });
+
+  return true;
+}
+
+// import sortBy from 'lodash.sortby' → import sortBy from 'es-toolkit/compat/sortby'
+function transformLodashIndividualPackages(root: Collection, j: JSCodeshift): boolean {
+  const lodashIndividualImports = root.find(j.ImportDeclaration).filter((path) => {
+    const source = path.node.source.value;
+    if (typeof source !== 'string' || !source.startsWith('lodash.')) {
+      return false;
+    }
+
+    const packageName = source.replace('lodash.', '');
+    return lodashFunctionsLowerCaseToOriginalMap.has(packageName);
+  });
+
+  if (lodashIndividualImports.length === 0) {
+    return false;
+  }
+
+  lodashIndividualImports.replaceWith((path) => {
+    const { node } = path;
+    const modulePath = node.source.value as string;
+    const lowercaseFunctionName = modulePath.replace('lodash.', '');
+    const originalFunctionName = lodashFunctionsLowerCaseToOriginalMap.get(lowercaseFunctionName);
+
+    if (node.specifiers?.[0]?.local && originalFunctionName) {
+      const localIdentifier = node.specifiers[0].local;
+
+      return j.importDeclaration(
+        [j.importDefaultSpecifier(localIdentifier)],
+        j.literal(`es-toolkit/compat/${originalFunctionName}`),
       );
     }
     return node;

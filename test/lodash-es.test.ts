@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { testTransform } from "./helpers";
-import { lodashFunctions } from "./constants";
+import { lodashFunctions } from "../src/constants";
 
 
 describe('lodash-es transformation', () => {
