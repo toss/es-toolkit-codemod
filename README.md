@@ -1,6 +1,6 @@
 ![cover](./public/og.png)
 
-# @es-toolkit/codemod &middot; [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/toss/slash/blob/main/LICENSE) [![Discord Badge](https://discord.com/api/guilds/1281071127052943361/widget.png?style=shield)](https://discord.gg/vGXbVjP2nY)
+# @es-toolkit/codemod &middot; [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/toss/slash/blob/main/LICENSE) [![NPM badge](https://img.shields.io/npm/v/@es-toolkit/codemod?logo=npm)](https://www.npmjs.com/package/@es-toolkit/codemod) [![Discord Badge](https://discord.com/api/guilds/1281071127052943361/widget.png?style=shield)](https://discord.gg/vGXbVjP2nY)
 
 English | [한국어](https://github.com/toss/es-toolkit-codemod/blob/main/README-ko_kr.md)
 
