@@ -24,8 +24,8 @@ const result = map([1, 2, 3], x => x * 2);`;
 
   describe('each functions at lodash-es', () => {
     it.each(lodashFunctions)('should transform %s import', (func) => {
-      const input = `import ${func} from 'lodash-es';`;
-      const expected = `import ${func} from 'es-toolkit/compat';`;
+      const input = `import { ${func} } from 'lodash-es';`;
+      const expected = `import { ${func} } from 'es-toolkit/compat';`;
       const result = testTransform(input);
       expect(result).toBe(expected);
     });
