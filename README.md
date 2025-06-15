@@ -1,4 +1,4 @@
-![](./docs/public/og.png)
+![cover](./public/og.png)
 
 # @es-toolkit/codemod &middot; [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/toss/slash/blob/main/LICENSE) [![Discord Badge](https://discord.com/api/guilds/1281071127052943361/widget.png?style=shield)](https://discord.gg/vGXbVjP2nY)
 
@@ -10,7 +10,7 @@ English | [한국어](https://github.com/toss/es-toolkit-codemod/blob/main/READM
 # Using npm
 npx @es-toolkit/codemod src/
 
-# Using yarn  
+# Using yarn
 yarn dlx @es-toolkit/codemod src/
 
 # Preview mode (check changes without applying them)
@@ -23,66 +23,52 @@ npx @es-toolkit/codemod src/ --dry
 
 ```javascript
 // Before
-import _ from 'lodash';
+import _ from "lodash";
 
-// After  
-import * as _ from 'es-toolkit/compat';
+// After
+import * as _ from "es-toolkit/compat";
 ```
 
 ### 2. Named Import
 
 ```javascript
 // Before
-import {
-    map,
-    filter,
-    reduce
-} from 'lodash';
+import { map, filter, reduce } from "lodash";
 
 // After
-import {
-    map,
-    filter,
-    reduce
-} from 'es-toolkit/compat';
+import { map, filter, reduce } from "es-toolkit/compat";
 ```
 
 ### 3. Individual Function Import
 
 ```javascript
 // Before
-import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
+import debounce from "lodash/debounce";
+import throttle from "lodash/throttle";
 
 // After
-import debounce from 'es-toolkit/compat/debounce';
-import throttle from 'es-toolkit/compat/throttle';
+import debounce from "es-toolkit/compat/debounce";
+import throttle from "es-toolkit/compat/throttle";
 ```
 
 ### 4. Aliased Import
 
 ```javascript
 // Before
-import myDebounce from 'lodash/debounce';
+import myDebounce from "lodash/debounce";
 
-// After  
-import myDebounce from 'es-toolkit/compat/debounce';
+// After
+import myDebounce from "es-toolkit/compat/debounce";
 ```
 
 ### 5. lodash-es Import
 
 ```javascript
 // Before
-import {
-    map,
-    filter
-} from 'lodash-es';
+import { map, filter } from "lodash-es";
 
 // After
-import {
-    map,
-    filter
-} from 'es-toolkit/compat';
+import { map, filter } from "es-toolkit/compat";
 ```
 
 ## 🎯 Usage
@@ -95,11 +81,11 @@ npx @es-toolkit/codemod <path>
 
 ### Options
 
-| Option | Description | Example |
-|------|------|------|
-| `<path>` | File or directory path to transform | `src/` , `components/` |
-| `--dry` | Preview mode (don't apply changes) | `--dry` |
-| `--help` , `-h` | Show help | `--help` |
+| Option          | Description                         | Example                |
+| --------------- | ----------------------------------- | ---------------------- |
+| `<path>`        | File or directory path to transform | `src/` , `components/` |
+| `--dry`         | Preview mode (don't apply changes)  | `--dry`                |
+| `--help` , `-h` | Show help                           | `--help`               |
 
 ### Usage Examples
 
@@ -119,8 +105,8 @@ npx @es-toolkit/codemod src/components/
 
 ## 🔗 Related Links
 
-* [es-toolkit Documentation](https://es-toolkit.slash.page)
-* [es-toolkit GitHub](https://github.com/toss/es-toolkit)
+- [es-toolkit Documentation](https://es-toolkit.slash.page)
+- [es-toolkit GitHub](https://github.com/toss/es-toolkit)
 
 ## License
 

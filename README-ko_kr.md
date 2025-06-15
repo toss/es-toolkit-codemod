@@ -1,4 +1,4 @@
-![](./docs/public/og.png)
+![](./public/og.png)
 
 # @es-toolkit/codemod &middot; [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/toss/slash/blob/main/LICENSE) [![Discord Badge](https://discord.com/api/guilds/1281071127052943361/widget.png?style=shield)](https://discord.gg/vGXbVjP2nY)
 
@@ -10,7 +10,7 @@
 # npm을 사용하는 경우
 npx @es-toolkit/codemod src/
 
-# yarn을 사용하는 경우  
+# yarn을 사용하는 경우
 yarn dlx @es-toolkit/codemod src/
 
 # 미리보기 모드 (변경사항을 적용하지 않고 확인만)
@@ -23,66 +23,52 @@ npx @es-toolkit/codemod src/ --dry
 
 ```javascript
 // Before
-import _ from 'lodash';
+import _ from "lodash";
 
-// After  
-import * as _ from 'es-toolkit/compat';
+// After
+import * as _ from "es-toolkit/compat";
 ```
 
 ### 2. Named Import
 
 ```javascript
 // Before
-import {
-    map,
-    filter,
-    reduce
-} from 'lodash';
+import { map, filter, reduce } from "lodash";
 
 // After
-import {
-    map,
-    filter,
-    reduce
-} from 'es-toolkit/compat';
+import { map, filter, reduce } from "es-toolkit/compat";
 ```
 
 ### 3. Individual Function Import
 
 ```javascript
 // Before
-import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
+import debounce from "lodash/debounce";
+import throttle from "lodash/throttle";
 
 // After
-import debounce from 'es-toolkit/compat/debounce';
-import throttle from 'es-toolkit/compat/throttle';
+import debounce from "es-toolkit/compat/debounce";
+import throttle from "es-toolkit/compat/throttle";
 ```
 
 ### 4. Aliased Import
 
 ```javascript
 // Before
-import myDebounce from 'lodash/debounce';
+import myDebounce from "lodash/debounce";
 
-// After  
-import myDebounce from 'es-toolkit/compat/debounce';
+// After
+import myDebounce from "es-toolkit/compat/debounce";
 ```
 
 ### 5. lodash-es Import
 
 ```javascript
 // Before
-import {
-    map,
-    filter
-} from 'lodash-es';
+import { map, filter } from "lodash-es";
 
 // After
-import {
-    map,
-    filter
-} from 'es-toolkit/compat';
+import { map, filter } from "es-toolkit/compat";
 ```
 
 ## 🎯 사용법
@@ -95,11 +81,11 @@ npx @es-toolkit/codemod <path>
 
 ### 옵션
 
-| 옵션 | 설명 | 예시 |
-|------|------|------|
-| `<path>` | 변환할 파일 또는 디렉토리 경로 | `src/` , `components/` |
-| `--dry` | 미리보기 모드 (변경 적용 안함) | `--dry` |
-| `--help` , `-h` | 도움말 표시 | `--help` |
+| 옵션            | 설명                           | 예시                   |
+| --------------- | ------------------------------ | ---------------------- |
+| `<path>`        | 변환할 파일 또는 디렉토리 경로 | `src/` , `components/` |
+| `--dry`         | 미리보기 모드 (변경 적용 안함) | `--dry`                |
+| `--help` , `-h` | 도움말 표시                    | `--help`               |
 
 ### 사용 예시
 
@@ -119,8 +105,8 @@ npx @es-toolkit/codemod src/components/
 
 ## 🔗 관련 링크
 
-* [es-toolkit 공식 문서](https://es-toolkit.slash.page)
-* [es-toolkit GitHub](https://github.com/toss/es-toolkit)
+- [es-toolkit 공식 문서](https://es-toolkit.slash.page)
+- [es-toolkit GitHub](https://github.com/toss/es-toolkit)
 
 ## License
 
