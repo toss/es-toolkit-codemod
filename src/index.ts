@@ -22,15 +22,9 @@ export default function transform(file: FileInfo, api: API): string | null {
 }
 
 function transformLodashImports(root: Collection, j: JSCodeshift): boolean {
-  const transformers = [
-    transformLodashDefaultImports,
-    transformLodashEsImports,
-    transformLodashFunctionImports,
-  ];
+  const transformers = [transformLodashDefaultImports, transformLodashEsImports, transformLodashFunctionImports];
 
-  const hasChanges = transformers.reduce((hasChanges, transform) => 
-    transform(root, j) || hasChanges, false
-  );
+  const hasChanges = transformers.reduce((hasChanges, transform) => transform(root, j) || hasChanges, false);
 
   return hasChanges;
 }
@@ -45,22 +39,21 @@ function transformLodashDefaultImports(root: Collection, j: JSCodeshift): boolea
     return false;
   }
 
-  lodashImports.replaceWith(path => {
+  lodashImports.replaceWith((path) => {
     const { node } = path;
 
     if (node.specifiers) {
-      const defaultSpecifier = node.specifiers.find(spec => spec.type === 'ImportDefaultSpecifier');
+      const defaultSpecifier = node.specifiers.find((spec) => spec.type === 'ImportDefaultSpecifier');
 
-      if (defaultSpecifier && defaultSpecifier.local) {
+      if (defaultSpecifier?.local) {
         // import _ from 'lodash' → import * as _ from 'es-toolkit/compat'
         return j.importDeclaration(
           [j.importNamespaceSpecifier(defaultSpecifier.local)],
-          j.literal('es-toolkit/compat')
+          j.literal('es-toolkit/compat'),
         );
-      } else {
-        // import { foo, bar } from 'lodash' → import { foo, bar } from 'es-toolkit/compat'
-        return j.importDeclaration(node.specifiers, j.literal('es-toolkit/compat'));
       }
+      // import { foo, bar } from 'lodash' → import { foo, bar } from 'es-toolkit/compat'
+      return j.importDeclaration(node.specifiers, j.literal('es-toolkit/compat'));
     }
     return node;
   });
@@ -78,7 +71,7 @@ function transformLodashEsImports(root: Collection, j: JSCodeshift): boolean {
     return false;
   }
 
-  lodashEsImports.replaceWith(path => {
+  lodashEsImports.replaceWith((path) => {
     const { node } = path;
 
     if (node.specifiers) {
@@ -92,7 +85,7 @@ function transformLodashEsImports(root: Collection, j: JSCodeshift): boolean {
 
 // import debounce from 'lodash/debounce' → import debounce from 'es-toolkit/compat/debounce'
 function transformLodashFunctionImports(root: Collection, j: JSCodeshift): boolean {
-  const lodashFunctionImports = root.find(j.ImportDeclaration).filter(path => {
+  const lodashFunctionImports = root.find(j.ImportDeclaration).filter((path) => {
     const source = path.node.source.value;
     return typeof source === 'string' && source.startsWith('lodash/');
   });
@@ -101,18 +94,18 @@ function transformLodashFunctionImports(root: Collection, j: JSCodeshift): boole
     return false;
   }
 
-  lodashFunctionImports.replaceWith(path => {
+  lodashFunctionImports.replaceWith((path) => {
     const { node } = path;
     const modulePath = node.source.value as string;
     const functionName = modulePath.replace('lodash/', '');
 
-    if (node.specifiers && node.specifiers[0] && node.specifiers[0].local) {
+    if (node.specifiers?.[0]?.local) {
       const localIdentifier = node.specifiers[0].local;
 
       // Keep the original default import structure
       return j.importDeclaration(
         [j.importDefaultSpecifier(localIdentifier)],
-        j.literal(`es-toolkit/compat/${functionName}`)
+        j.literal(`es-toolkit/compat/${functionName}`),
       );
     }
     return node;
