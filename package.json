@@ -37,6 +37,7 @@
     "jscodeshift": "^17.3.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
     "@biomejs/biome": "1.9.4",
     "@types/jscodeshift": "^17.3.0",
     "@types/node": "^22.7.4",
