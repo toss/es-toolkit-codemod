@@ -17,7 +17,6 @@
     "url": "https://github.com/toss/es-toolkit-codemod.git"
   },
   "license": "MIT",
-  "author": "Toss",
   "main": "dist/index.js",
   "bin": {
     "es-toolkit-codemod": "./bin/cli.js"
