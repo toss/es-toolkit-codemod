@@ -24,14 +24,14 @@
   },
   "files": [
     "dist",
-    "bin",
-    "README.md"
+    "bin"
   ],
   "scripts": {
     "build": "tsdown",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "dev": "tsdown --watch"
+    "dev": "tsdown --watch",
+    "prepack": "yarn build"
   },
   "dependencies": {
     "jscodeshift": "^17.3.0"
