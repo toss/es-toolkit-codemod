@@ -51,17 +51,11 @@ import debounce from "es-toolkit/compat/debounce";
 import throttle from "es-toolkit/compat/throttle";
 ```
 
-### 4. Aliased Import
+> [!NOTE]
+> The variable/function name will be preserved when importing individual functions.
+> e.g. `import debounceFn from 'lodash/debounce'` will be transformed to `import debounceFn from 'es-toolkit/compat/debounce'`
 
-```javascript
-// Before
-import myDebounce from "lodash/debounce";
-
-// After
-import myDebounce from "es-toolkit/compat/debounce";
-```
-
-### 5. lodash-es Import
+### 4. lodash-es Import
 
 ```javascript
 // Before
