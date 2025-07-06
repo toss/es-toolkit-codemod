@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { testTransform } from "./helpers";
-import { lodashFunctions } from "./constants";
+import { LODASH_FUNCTIONS } from "../src/constants";
 
 
 describe('lodash-es transformation', () => {
@@ -23,7 +23,7 @@ const result = map([1, 2, 3], x => x * 2);`;
   });
 
   describe('each functions at lodash-es', () => {
-    it.each(lodashFunctions)('should transform %s import', (func) => {
+    it.each(LODASH_FUNCTIONS)('should transform %s import', (func) => {
       const input = `import { ${func} } from 'lodash-es';`;
       const expected = `import { ${func} } from 'es-toolkit/compat';`;
       const result = testTransform(input);

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { testTransform } from "./helpers";
-import { lodashFunctions } from "./constants";
+import { LODASH_FUNCTIONS } from "../src/constants";
 
 describe('individual function import transformation', () => {
   it('should transform individual lodash function imports', () => {
@@ -28,14 +28,14 @@ const fn = myDebounce(() => {}, 100);`;
   });
 
   describe('each functions at lodash', () => {
-    it.each(lodashFunctions)('should transform %s import', (func) => {
+    it.each(LODASH_FUNCTIONS)('should transform %s import', (func) => {
       const input = `import ${func} from 'lodash/${func}';`;
       const expected = `import ${func} from 'es-toolkit/compat/${func}';`;
       const result = testTransform(input);
       expect(result).toBe(expected);
     });
 
-    it.each(lodashFunctions)('should transform aliased %s import', (func) => {
+    it.each(LODASH_FUNCTIONS)('should transform aliased %s import', (func) => {
       const alias = `my${func}`;
       
       const input = `import ${alias} from 'lodash/${func}';`;
