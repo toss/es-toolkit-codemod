@@ -26,7 +26,7 @@ npx @es-toolkit/codemod src/ --dry
 import _ from "lodash";
 
 // After
-import * as _ from "es-toolkit/compat";
+import _ from "es-toolkit/compat";
 ```
 
 ### 2. Named Import
@@ -63,6 +63,17 @@ import { map, filter } from "lodash-es";
 
 // After
 import { map, filter } from "es-toolkit/compat";
+```
+
+
+### 5. individual lodash package import
+
+```javascript
+// Before
+import debounce from "lodash.debounce";
+
+// After
+import debounce from "es-toolkit/compat/debounce";
 ```
 
 ## 🎯 사용법
